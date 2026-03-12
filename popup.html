@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>REDCap Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css"> 
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">RC</div>
+      <div>
+        <div class="header-title">REDCap Navigator</div>
+        <div class="header-sub">Research Electronic Data Capture</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="toggleDark" class="icon-btn" title="Toggle theme">☀</button>
+      <button id="toggleCommandPalette" class="cmd-btn">
+        <span>⌘</span> Command
+        <span class="kbd">⇧Space</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- COMMAND PALETTE -->
+    <div id="commandPaletteSection" class="command-section hidden">
+      <div class="command-label">Command Palette</div>
+      <div class="command-input-wrap">
+        <span class="cmd-icon">›</span>
+        <input
+          id="commandInput"
+          type="text"
+          placeholder="123 | 123 PT001 baseline | 123 dashboard"
+          autocomplete="off"
+        >
+      </div>
+      <div class="command-actions">
+        <button id="runCommand" class="btn btn-primary btn-sm">Run</button>
+        <button id="closeCommandPalette" class="btn btn-sm">Dismiss</button>
+      </div>
+      <div class="command-hint">
+        Examples:
+        <code>123</code>
+        <code>123 PT001 baseline</code>
+        <code>123 dashboard</code>
+        <code>123 designer</code>
+        <code>123 report 5</code>
+      </div>
+    </div>
+
+    <!-- SERVER -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot"></span>Server</span>
+        <div id="serverInfo" class="server-status"></div>
+      </div>
+      <div class="server-row">
+        <select id="serverSelect"></select>
+      </div>
+    </div>
+
+    <!-- DETECTED CONTEXT -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot" style="background:var(--green)"></span>Detected Context</span>
+      </div>
+      <div id="detectedContextSummary" class="context-pill">
+        <span class="context-key">status</span> · <span class="context-val">No REDCap tab detected</span>
+      </div>
+      <div class="btn-row">
+        <button id="useDetectedContext" class="btn btn-primary btn-sm">Use Current Page</button>
+        <button id="addCurrentProject" class="btn btn-sm">+ Add Project</button>
+        <button id="addCurrentRecord" class="btn btn-sm">+ Add Record</button>
+      </div>
+    </div>
+
+    <!-- QUICK RECORD JUMP -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot" style="background:var(--warning)"></span>Quick Record Jump</span>
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <label for="projectId">Project ID</label>
+          <input id="projectId" type="text" placeholder="123">
+        </div>
+        <div class="field">
+          <label for="recordId">Record ID</label>
+          <input id="recordId" type="text" placeholder="optional">
+        </div>
+        <div class="field">
+          <label for="recordId">Arm</label>
+          <input type="text" id="armId" placeholder="optional">
+        </div>
+        <div class="field">
+          <label for="formName">Form/Page</label>
+          <input id="formName" type="text" placeholder="baseline">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="openRecord" class="btn btn-primary btn-sm">Open Record</button>
+        <button id="recordDashboard" class="btn btn-sm">Dashboard</button>
+      </div>
+    </div>
+
+    <!-- PROJECT TOOLS -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot" style="background:var(--teal)"></span>Project Tools</span>
+      </div>
+      <div class="tool-grid">
+        <button class="tool-btn" data-tool="designer">
+          <span class="tool-icon">✏️</span>
+          Designer
+        </button>
+        <button class="tool-btn" data-tool="codebook">
+          <span class="tool-icon">📖</span>
+          Data Dictionary
+        </button>
+        <button class="tool-btn" data-tool="setup">
+          <span class="tool-icon">⚙️</span>
+          Setup
+        </button>
+        <button class="tool-btn" data-tool="logs">
+          <span class="tool-icon">📋</span>
+          Logs
+        </button>
+        <button class="tool-btn" data-tool="dq">
+          <span class="tool-icon">🔍</span>
+          Data QA
+        </button>
+      </div>
+    </div>
+
+    <!-- FAVORITES -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot" style="background:var(--warning)"></span>Favorites</span>
+        <button id="addFavorite" class="btn btn-ghost btn-sm">+ Add Current</button>
+      </div>
+      <ul id="favorites" class="item-list">
+        <li class="empty-state">No favorites yet</li>
+      </ul>
+    </div>
+
+    <!-- RECENT RECORDS -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot"></span>Recent Records</span>
+      </div>
+      <ul id="recentRecords" class="item-list">
+        <li class="empty-state">No recent records</li>
+      </ul>
+    </div>
+
+    <!-- UTILITIES -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot" style="background:var(--teal)"></span>Utilities</span>
+      </div>
+      <div class="btn-row">
+        <button id="copyRecordUrl" class="btn btn-sm">⎘ Record URL</button>
+        <button id="copyProjectUrl" class="btn btn-sm">⎘ Project URL</button>
+      </div>
+    </div>
+
+  </div>
+  <script type="module" src="popup/main.js"></script>
+</body>
+</html>

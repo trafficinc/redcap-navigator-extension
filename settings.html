@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>REDCap Navigator Settings</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px auto;
+        max-width: 950px;
+        padding: 0 12px;
+        color: #111;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+      }
+
+      .section {
+        border-top: 1px solid #ddd;
+        padding-top: 14px;
+        margin-top: 18px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px;
+      }
+
+      .toolbar {
+        margin: 14px 0;
+      }
+
+      .checkbox-row {
+        margin: 8px 0;
+      }
+
+      .muted {
+        color: #666;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      button {
+        padding: 7px 12px;
+        cursor: pointer;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>REDCap Navigator Settings</h2>
+
+    <div class="section">
+      <h3>REDCap Server Configuration</h3>
+
+      <label for="defaultServerUrl"><strong>Default Server URL</strong></label>
+      <input
+        id="defaultServerUrl"
+        type="text"
+        placeholder="https://redcap.myinstitution.edu"
+      />
+
+      <div style="height: 10px"></div>
+
+      <label for="defaultVersion"
+        ><strong>REDCap Version (optional)</strong></label
+      >
+      <input id="defaultVersion" type="text" placeholder="14.6.2" />
+
+      <div class="muted">
+        If blank, the extension uses /redcap/. If auto-detect is enabled,
+        current-tab version wins when available.
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Server Profiles</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>URL</th>
+            <th>Version</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="serverTable"></tbody>
+      </table>
+
+      <div class="toolbar">
+        <button id="addServer" type="button">+ Add Server</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Behavior</h3>
+
+      <div class="checkbox-row">
+        <label
+          ><input type="checkbox" id="reuseCurrentTab" /> Reuse current tab
+          instead of opening a new tab</label
+        >
+      </div>
+
+      <div class="checkbox-row">
+        <label
+          ><input type="checkbox" id="enableRecentTracking" /> Enable recent
+          record tracking</label
+        >
+      </div>
+
+      <div class="checkbox-row">
+        <label
+          ><input type="checkbox" id="enableFavorites" /> Enable
+          favorites</label
+        >
+      </div>
+
+      <div class="checkbox-row">
+        <label
+          ><input type="checkbox" id="enableDarkMode" /> Enable dark mode</label
+        >
+      </div>
+
+      <div class="checkbox-row">
+        <label
+          ><input type="checkbox" id="autoDetectVersion" /> Auto-detect REDCap
+          version from active tab</label
+        >
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Storage</h3>
+      <button id="clearRecentRecords" type="button">
+        Clear Recent Records
+      </button>
+      <button id="resetSettings" type="button">Reset Settings</button>
+    </div>
+
+    <div class="section">
+      <button id="saveSettings" type="button">Save Settings</button>
+    </div>
+
+    <script src="settings.js"></script>
+  </body>
+</html>
