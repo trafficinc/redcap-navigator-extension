@@ -4,6 +4,8 @@ A Chrome extension that adds quick navigation tools for REDCap projects and reco
 
 REDCap Navigator helps researchers, coordinators, analysts, and admins jump faster between project pages, records, reports, and common REDCap tools without repeatedly clicking through the REDCap interface.
 
+<img src="rc-nav-001.png" alt="Alt text" width="500"> 
+
 ## Features
 
 - Open a REDCap project by Project ID
@@ -22,6 +24,19 @@ REDCap Navigator helps researchers, coordinators, analysts, and admins jump fast
 - Configurable server and REDCap version support
 - Optional reuse of the current tab instead of opening a new one
 - Dark mode support
+
+## Install steps:
+
+1. Download the ZIP in releases
+2. Extract it
+3. Go to chrome://extensions
+4. Enable Developer Mode
+5. Click "Load Unpacked"
+6. Select the folder
+
+## Set Options
+1. Right click on the icon in the browser (make sure the extension is pinned in your browser)
+2. select options
 
 ## Why this extension
 
