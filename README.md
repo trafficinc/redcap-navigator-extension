@@ -34,9 +34,12 @@ REDCap Navigator helps researchers, coordinators, analysts, and admins jump fast
 5. Click "Load Unpacked"
 6. Select the folder
 
-## Set Options
+#### To Upgrade: follow the same steps as installing. "Export" your settings in "Options" first, so you do not lose your settings. ####
+
+## Configure/Set Options (Do this upon first time installing!)
 1. Right click on the icon in the browser (make sure the extension is pinned in your browser)
 2. select options
+3. Configure the extension to match your environment
 
 ## Why this extension
 
