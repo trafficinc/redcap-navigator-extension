@@ -16,6 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const autoDetectVersionInput = document.getElementById("autoDetectVersion");
   const reuseCurrentTabInput = document.getElementById("reuseCurrentTab");
 
+  const exportBackupBtn = document.getElementById("exportBackup");
+  const importBackupBtn = document.getElementById("importBackup");
+  const importBackupFileInput = document.getElementById("importBackupFile");
+
   const DEFAULT_SERVER = {
     name: "Default",
     url: "https://redcap.myinstitution.edu",
@@ -40,6 +44,64 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/"/g, "&quot;");
   }
 
+  function downloadTextFile(filename, content, mimeType = "application/json") {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+
+  function normalizeFavorites(list) {
+    if (!Array.isArray(list)) return [];
+
+    return list
+      .map((item) => ({
+        pid: String(item?.pid || "").trim(),
+        name: String(item?.name || "").trim(),
+        projectLabel: String(item?.projectLabel || "").trim(),
+        serverUrl: String(item?.serverUrl || "").trim(),
+        serverVersion: String(item?.serverVersion || "").trim(),
+      }))
+      .filter((item) => item.pid && item.serverUrl);
+  }
+
+  function normalizeImportedSettings(data) {
+    const cleanedServers = Array.isArray(data?.servers)
+      ? data.servers.map(normalizeServer).filter((s) => s.url)
+      : [];
+
+    return {
+      servers: cleanedServers.length ? cleanedServers : [DEFAULT_SERVER],
+      defaultServerUrl: String(data?.defaultServerUrl || "").trim(),
+      defaultVersion: String(data?.defaultVersion || "").trim(),
+      enableRecentTracking:
+        typeof data?.enableRecentTracking === "boolean"
+          ? data.enableRecentTracking
+          : true,
+      enableFavorites:
+        typeof data?.enableFavorites === "boolean"
+          ? data.enableFavorites
+          : true,
+      autoDetectVersion:
+        typeof data?.autoDetectVersion === "boolean"
+          ? data.autoDetectVersion
+          : true,
+      reuseCurrentTab:
+        typeof data?.reuseCurrentTab === "boolean"
+          ? data.reuseCurrentTab
+          : false,
+      darkMode: typeof data?.darkMode === "boolean" ? data.darkMode : false,
+      favorites: normalizeFavorites(data?.favorites),
+    };
+  }
+
   async function loadSettings() {
     const syncData = await chrome.storage.sync.get([
       "servers",
@@ -51,7 +113,10 @@ document.addEventListener("DOMContentLoaded", () => {
       "reuseCurrentTab",
     ]);
 
-    reuseCurrentTabInput.checked = typeof syncData.reuseCurrentTab === "boolean" ? syncData.reuseCurrentTab : false;
+    reuseCurrentTabInput.checked =
+      typeof syncData.reuseCurrentTab === "boolean"
+        ? syncData.reuseCurrentTab
+        : false;
 
     const localData = await chrome.storage.local.get(["darkMode"]);
 
@@ -147,12 +212,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     await chrome.storage.sync.set({
       servers: cleanedServers,
-      defaultServerUrl: defaultServerUrlInput.value.trim() || cleanedServers[0].url,
+      defaultServerUrl:
+        defaultServerUrlInput.value.trim() || cleanedServers[0].url,
       defaultVersion: defaultVersionInput.value.trim(),
       enableRecentTracking: enableRecentTrackingInput.checked,
       enableFavorites: enableFavoritesInput.checked,
       autoDetectVersion: autoDetectVersionInput.checked,
-      reuseCurrentTab: reuseCurrentTabInput.checked
+      reuseCurrentTab: reuseCurrentTabInput.checked,
     });
 
     await chrome.storage.local.set({
@@ -180,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       enableRecentTracking: true,
       enableFavorites: true,
       autoDetectVersion: true,
-      reuseCurrentTab: false
+      reuseCurrentTab: false,
     });
 
     await chrome.storage.local.set({
@@ -191,10 +257,125 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Settings reset");
   }
 
+  async function exportBackup() {
+    const syncData = await chrome.storage.sync.get([
+      "servers",
+      "defaultServerUrl",
+      "defaultVersion",
+      "enableRecentTracking",
+      "enableFavorites",
+      "autoDetectVersion",
+      "reuseCurrentTab",
+      "favorites",
+    ]);
+
+    const localData = await chrome.storage.local.get(["darkMode"]);
+
+    const backup = {
+      app: "REDCap Navigator",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      settings: {
+        servers:
+          Array.isArray(syncData.servers) && syncData.servers.length
+            ? syncData.servers.map(normalizeServer)
+            : [DEFAULT_SERVER],
+        defaultServerUrl: syncData.defaultServerUrl || DEFAULT_SERVER.url,
+        defaultVersion: syncData.defaultVersion || "",
+        enableRecentTracking:
+          typeof syncData.enableRecentTracking === "boolean"
+            ? syncData.enableRecentTracking
+            : true,
+        enableFavorites:
+          typeof syncData.enableFavorites === "boolean"
+            ? syncData.enableFavorites
+            : true,
+        autoDetectVersion:
+          typeof syncData.autoDetectVersion === "boolean"
+            ? syncData.autoDetectVersion
+            : true,
+        reuseCurrentTab:
+          typeof syncData.reuseCurrentTab === "boolean"
+            ? syncData.reuseCurrentTab
+            : false,
+        darkMode: Boolean(localData.darkMode),
+        favorites: normalizeFavorites(syncData.favorites),
+      },
+    };
+
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadTextFile(
+      `redcap-navigator-backup-${stamp}.json`,
+      JSON.stringify(backup, null, 2),
+    );
+  }
+
+  async function importBackupFile(file) {
+    if (!file) return;
+
+    const text = await file.text();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch (err) {
+      alert("Import failed. The selected file is not valid JSON.");
+      return;
+    }
+
+    if (
+      !parsed ||
+      parsed.app !== "REDCap Navigator" ||
+      !parsed.settings ||
+      typeof parsed.settings !== "object"
+    ) {
+      alert(
+        "Import failed. This does not look like a REDCap Navigator backup file.",
+      );
+      return;
+    }
+
+    const imported = normalizeImportedSettings(parsed.settings);
+
+    await chrome.storage.sync.set({
+      servers: imported.servers,
+      defaultServerUrl:
+        imported.defaultServerUrl ||
+        imported.servers[0].url ||
+        DEFAULT_SERVER.url,
+      defaultVersion: imported.defaultVersion,
+      enableRecentTracking: imported.enableRecentTracking,
+      enableFavorites: imported.enableFavorites,
+      autoDetectVersion: imported.autoDetectVersion,
+      reuseCurrentTab: imported.reuseCurrentTab,
+      favorites: imported.favorites,
+    });
+
+    await chrome.storage.local.set({
+      darkMode: imported.darkMode,
+    });
+
+    await loadSettings();
+    alert("Backup imported successfully.");
+  }
+
   addServerBtn?.addEventListener("click", addServer);
   saveBtn?.addEventListener("click", saveSettings);
   clearRecentBtn?.addEventListener("click", clearRecentRecords);
   resetSettingsBtn?.addEventListener("click", resetSettings);
+
+  exportBackupBtn?.addEventListener("click", exportBackup);
+
+  importBackupBtn?.addEventListener("click", () => {
+    importBackupFileInput?.click();
+  });
+
+  importBackupFileInput?.addEventListener("change", async (event) => {
+    const file = event.target.files?.[0];
+    await importBackupFile(file);
+
+    event.target.value = "";
+  });
 
   loadSettings().catch((err) => {
     console.error("Failed to load settings", err);

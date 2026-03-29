@@ -154,10 +154,20 @@
 
     <div class="section">
       <h3>Storage</h3>
+
+      <button id="exportBackup" type="button">Export Backup</button>
+      <button id="importBackup" type="button">Import Backup</button>
+      <input id="importBackupFile" type="file" accept="application/json" style="display:none" />
+
       <button id="clearRecentRecords" type="button">
         Clear Recent Records
       </button>
       <button id="resetSettings" type="button">Reset Settings</button>
+
+      <div class="muted">
+        Export saves your server profiles, behavior settings, favorites, and dark mode preference.
+      </div>
+
     </div>
 
     <div class="section">
