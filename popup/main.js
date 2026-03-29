@@ -55,6 +55,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     ui,
   };
 
+
+
+  const utilitiesStatus = document.getElementById("utilities-status");
+  let utilitiesStatusTimer = null;
+
+  function showUtilitiesStatus(message) {
+    if (!utilitiesStatus) return;
+
+    utilitiesStatus.textContent = message;
+    utilitiesStatus.classList.add("show");
+
+    if (utilitiesStatusTimer) {
+      clearTimeout(utilitiesStatusTimer);
+    }
+
+    utilitiesStatusTimer = setTimeout(() => {
+      utilitiesStatus.textContent = "";
+      utilitiesStatus.classList.remove("show");
+    }, 1500);
+  }
+
+
+
   async function openUrl(url) {
     if (!url || typeof url !== "string") return;
 
@@ -232,6 +255,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await navigator.clipboard.writeText(
       buildProjectUrl(state.currentServer, pid),
     );
+    showUtilitiesStatus("Project URL copied");
   }
 
   async function copyRecordUrl() {
@@ -246,6 +270,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       : buildProjectUrl(state.currentServer, pid);
 
     await navigator.clipboard.writeText(url);
+
+    showUtilitiesStatus("Record URL copied");
   }
 
   function openCommandPalette() {

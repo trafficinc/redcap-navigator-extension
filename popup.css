@@ -580,3 +580,41 @@
       font-size: 11px;
       font-style: italic;
     }
+
+
+    .favorite-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.favorite-btn {
+  min-width: 56px;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+.favorite-btn-open {
+  background: var(--accent-dim);
+  border-color: var(--border-accent);
+  color: var(--accent-hover);
+}
+
+.favorite-btn-open:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.favorite-btn-delete {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.favorite-btn-delete:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}

@@ -1,5 +1,30 @@
 import { buildProjectUrl } from "./urls.js";
-import { getFavorites, saveFavorites } from "./storage.js";
+import { getFavorites, saveFavorites, getSettings } from "./storage.js";
+
+async function openUrl(url) {
+  if (!url || typeof url !== "string") return;
+
+  const settings = await getSettings();
+  const reuseCurrentTab =
+    typeof settings.reuseCurrentTab === "boolean"
+      ? settings.reuseCurrentTab
+      : false;
+
+  if (reuseCurrentTab) {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+
+    if (tab?.id) {
+      await chrome.tabs.update(tab.id, { url });
+      window.close();
+      return;
+    }
+  }
+
+  await chrome.tabs.create({ url });
+}
 
 export async function renderFavorites(container, state) {
   container.innerHTML = "";
@@ -14,14 +39,16 @@ export async function renderFavorites(container, state) {
     const li = document.createElement("li");
 
     const span = document.createElement("span");
+    span.className = "item-label";
     const label = item.name || item.projectLabel || `Project ${item.pid}`;
     span.textContent = `${item.pid} ${label}`.trim();
 
     const actions = document.createElement("div");
-    actions.className = "buttons";
+    actions.className = "item-actions favorite-actions";
 
     const openBtn = document.createElement("button");
     openBtn.type = "button";
+    openBtn.className = "btn btn-sm favorite-btn favorite-btn-open";
     openBtn.textContent = "Open";
     openBtn.addEventListener("click", async () => {
       const server = {
@@ -29,13 +56,12 @@ export async function renderFavorites(container, state) {
         version: item.serverVersion || ""
       };
 
-      await chrome.tabs.create({
-        url: buildProjectUrl(server, item.pid)
-      });
+      await openUrl(buildProjectUrl(server, item.pid));
     });
 
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
+    deleteBtn.className = "btn btn-sm favorite-btn favorite-btn-delete";
     deleteBtn.textContent = "Delete";
     deleteBtn.addEventListener("click", async () => {
       await deleteFavorite(item.pid, item.serverUrl, item.serverVersion);
@@ -71,15 +97,16 @@ export async function addFavoriteFromContext(state, nameOverride = "") {
     return;
   }
 
-  const name = typeof nameOverride === "string" && nameOverride.length
-    ? nameOverride
-    : (window.prompt("Project name", context?.projectLabel || "") ?? null);
+  const name =
+    typeof nameOverride === "string" && nameOverride.length
+      ? nameOverride
+      : (window.prompt("Project name", context?.projectLabel || "") ?? null);
 
   if (name === null) return;
 
   const favorites = await getFavorites();
 
-  const filtered = favorites.filter(item => {
+  const filtered = favorites.filter((item) => {
     return !(
       String(item.pid) === String(pid) &&
       String(item.serverUrl || "") === String(server.url || "") &&
@@ -92,7 +119,7 @@ export async function addFavoriteFromContext(state, nameOverride = "") {
     name: String(name || "").trim(),
     projectLabel: context?.projectLabel || "",
     serverUrl: server.url || "",
-    serverVersion: server.version || ""
+    serverVersion: server.version || "",
   });
 
   await saveFavorites(filtered);
@@ -101,7 +128,7 @@ export async function addFavoriteFromContext(state, nameOverride = "") {
 export async function deleteFavorite(pid, serverUrl = "", serverVersion = "") {
   const favorites = await getFavorites();
 
-  const filtered = favorites.filter(item => {
+  const filtered = favorites.filter((item) => {
     return !(
       String(item.pid) === String(pid) &&
       String(item.serverUrl || "") === String(serverUrl || "") &&

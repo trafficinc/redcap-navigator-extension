@@ -36,10 +36,11 @@ export async function renderRecent(container, state) {
       `${item.pid} / ${item.recordId} / ${friendlyPage}`.trim();
 
     const actions = document.createElement("div");
-    actions.className = "buttons";
+    actions.className = "item-actions favorite-actions";
 
     const openBtn = document.createElement("button");
     openBtn.type = "button";
+    openBtn.className = "btn btn-sm favorite-btn favorite-btn-open";
     openBtn.textContent = "Open";
     openBtn.addEventListener("click", async () => {
       const server = {
@@ -78,6 +79,7 @@ export async function renderRecent(container, state) {
 
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
+    deleteBtn.className = "btn btn-sm favorite-btn favorite-btn-delete";
     deleteBtn.textContent = "Delete";
     deleteBtn.addEventListener("click", async () => {
       const current = await getRecent();
