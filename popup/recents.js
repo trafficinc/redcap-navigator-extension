@@ -2,10 +2,6 @@ import { buildRecordUrl } from "./urls.js";
 import { getRecent, saveRecentList } from "./storage.js";
 
 export async function saveRecentRecord(state, record) {
-  if (!state.settings.enableRecentTracking) {
-    return;
-  }
-
   const current = await getRecent();
 
   const deduped = current.filter((item) => {
@@ -30,7 +26,12 @@ export async function renderRecent(container, state) {
   for (const item of recent) {
     const li = document.createElement("li");
 
+    // const span = document.createElement("span");
+    // const friendlyPage = item.projectTitle || item.formLabel || item.page || "";
+    // span.textContent = `${item.pid} / ${item.recordId} / ${friendlyPage}`.trim();
+
     const span = document.createElement("span");
+    span.className = "item-label";
     const friendlyPage = item.projectTitle || item.formLabel || item.page || "";
     span.textContent = `${item.pid} / ${item.recordId} / ${friendlyPage}`.trim();
 

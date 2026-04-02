@@ -9,8 +9,6 @@ export async function getSettings() {
     "servers",
     "defaultServerUrl",
     "defaultVersion",
-    "enableRecentTracking",
-    "enableFavorites",
     "autoDetectVersion",
     "aliases",
     "reuseCurrentTab"
@@ -31,8 +29,6 @@ export async function getSettings() {
     servers,
     defaultServerUrl: syncData.defaultServerUrl || servers[0].url || DEFAULT_SERVER.url,
     defaultVersion: typeof syncData.defaultVersion === "string" ? syncData.defaultVersion : "",
-    enableRecentTracking: typeof syncData.enableRecentTracking === "boolean" ? syncData.enableRecentTracking : true,
-    enableFavorites: typeof syncData.enableFavorites === "boolean" ? syncData.enableFavorites : true,
     autoDetectVersion: typeof syncData.autoDetectVersion === "boolean" ? syncData.autoDetectVersion : true,
     reuseCurrentTab:
       typeof syncData.reuseCurrentTab === "boolean"

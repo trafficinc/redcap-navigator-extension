@@ -29,10 +29,6 @@ async function openUrl(url) {
 export async function renderFavorites(container, state) {
   container.innerHTML = "";
 
-  if (!state.settings.enableFavorites) {
-    return;
-  }
-
   const favorites = await getFavorites();
 
   for (const item of favorites) {
@@ -78,11 +74,6 @@ export async function renderFavorites(container, state) {
 }
 
 export async function addFavoriteFromContext(state, nameOverride = "") {
-  if (!state.settings.enableFavorites) {
-    alert("Favorites are disabled in settings.");
-    return;
-  }
-
   const context = state.detectedContext;
   const pid = context?.pid || state.ui.projectInput.value.trim();
 

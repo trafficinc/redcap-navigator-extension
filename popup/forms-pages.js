@@ -32,8 +32,12 @@ export async function renderFormsPages(container, state) {
     const li = document.createElement("li");
 
     const span = document.createElement("span");
+    span.className = "item-label";
     const label = item.formLabel || item.page || "";
-    span.textContent = `${item.pid} / ${label}`.trim();
+    //span.textContent = `${item.pid} / ${label}`.trim();
+    span.textContent = item.recordId
+  ? `${item.pid} / ${item.recordId} / ${label}`
+  : `${item.pid} / ${label}`;
 
     const actions = document.createElement("div");
     actions.className = "item-actions favorite-actions";

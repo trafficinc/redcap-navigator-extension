@@ -4,18 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("saveSettings");
   const clearRecentBtn = document.getElementById("clearRecentRecords");
   const resetSettingsBtn = document.getElementById("resetSettings");
-
   const defaultServerUrlInput = document.getElementById("defaultServerUrl");
   const defaultVersionInput = document.getElementById("defaultVersion");
-
-  const enableRecentTrackingInput = document.getElementById(
-    "enableRecentTracking",
-  );
-  const enableFavoritesInput = document.getElementById("enableFavorites");
   const enableDarkModeInput = document.getElementById("enableDarkMode");
   const autoDetectVersionInput = document.getElementById("autoDetectVersion");
   const reuseCurrentTabInput = document.getElementById("reuseCurrentTab");
-
   const exportBackupBtn = document.getElementById("exportBackup");
   const importBackupBtn = document.getElementById("importBackup");
   const importBackupFileInput = document.getElementById("importBackupFile");
@@ -97,14 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
       servers: cleanedServers.length ? cleanedServers : [DEFAULT_SERVER],
       defaultServerUrl: String(data?.defaultServerUrl || "").trim(),
       defaultVersion: String(data?.defaultVersion || "").trim(),
-      enableRecentTracking:
-        typeof data?.enableRecentTracking === "boolean"
-          ? data.enableRecentTracking
-          : true,
-      enableFavorites:
-        typeof data?.enableFavorites === "boolean"
-          ? data.enableFavorites
-          : true,
       autoDetectVersion:
         typeof data?.autoDetectVersion === "boolean"
           ? data.autoDetectVersion
@@ -124,8 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
       "servers",
       "defaultServerUrl",
       "defaultVersion",
-      "enableRecentTracking",
-      "enableFavorites",
       "autoDetectVersion",
       "reuseCurrentTab",
     ]);
@@ -149,16 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
     defaultServerUrlInput.value =
       syncData.defaultServerUrl || servers[0].url || DEFAULT_SERVER.url;
     defaultVersionInput.value = syncData.defaultVersion || "";
-
-    enableRecentTrackingInput.checked =
-      typeof syncData.enableRecentTracking === "boolean"
-        ? syncData.enableRecentTracking
-        : true;
-
-    enableFavoritesInput.checked =
-      typeof syncData.enableFavorites === "boolean"
-        ? syncData.enableFavorites
-        : true;
 
     autoDetectVersionInput.checked =
       typeof syncData.autoDetectVersion === "boolean"
@@ -232,8 +205,6 @@ document.addEventListener("DOMContentLoaded", () => {
       defaultServerUrl:
         defaultServerUrlInput.value.trim() || cleanedServers[0].url,
       defaultVersion: defaultVersionInput.value.trim(),
-      enableRecentTracking: enableRecentTrackingInput.checked,
-      enableFavorites: enableFavoritesInput.checked,
       autoDetectVersion: autoDetectVersionInput.checked,
       reuseCurrentTab: reuseCurrentTabInput.checked,
     });
@@ -260,8 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
       servers: [DEFAULT_SERVER],
       defaultServerUrl: DEFAULT_SERVER.url,
       defaultVersion: "",
-      enableRecentTracking: true,
-      enableFavorites: true,
       autoDetectVersion: true,
       reuseCurrentTab: false,
     });
@@ -279,8 +248,6 @@ document.addEventListener("DOMContentLoaded", () => {
       "servers",
       "defaultServerUrl",
       "defaultVersion",
-      "enableRecentTracking",
-      "enableFavorites",
       "autoDetectVersion",
       "reuseCurrentTab",
       "favorites",
@@ -299,14 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
             : [DEFAULT_SERVER],
         defaultServerUrl: syncData.defaultServerUrl || DEFAULT_SERVER.url,
         defaultVersion: syncData.defaultVersion || "",
-        enableRecentTracking:
-          typeof syncData.enableRecentTracking === "boolean"
-            ? syncData.enableRecentTracking
-            : true,
-        enableFavorites:
-          typeof syncData.enableFavorites === "boolean"
-            ? syncData.enableFavorites
-            : true,
         autoDetectVersion:
           typeof syncData.autoDetectVersion === "boolean"
             ? syncData.autoDetectVersion
@@ -362,8 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
         imported.servers[0].url ||
         DEFAULT_SERVER.url,
       defaultVersion: imported.defaultVersion,
-      enableRecentTracking: imported.enableRecentTracking,
-      enableFavorites: imported.enableFavorites,
       autoDetectVersion: imported.autoDetectVersion,
       reuseCurrentTab: imported.reuseCurrentTab,
       favorites: imported.favorites,
