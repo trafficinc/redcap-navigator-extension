@@ -267,14 +267,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const rid = ui.recordInput.value.trim();
     const page = ui.formInput.value.trim();
-
+    const arm = ui.armInput.value.trim() || "";
+ 
     const url = rid
-      ? buildRecordUrl(state.currentServer, pid, rid, page)
+      ? buildRecordUrl(state.currentServer, pid, rid, page, arm)
       : buildProjectUrl(state.currentServer, pid);
 
     await navigator.clipboard.writeText(url);
 
-    showUtilitiesStatus("Record URL copied");
+    if (rid === "") {
+      showUtilitiesStatus("Record URL not found");
+    } else {
+      showUtilitiesStatus("Record URL copied");
+    }
   }
 
   function openCommandPalette() {

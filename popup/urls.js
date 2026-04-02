@@ -59,10 +59,13 @@ export function buildRecordUrl(server, pid, recordId, page = "", arm = "") {
     params.push(`arm=${encodeURIComponent(arm)}`);
   }
 
-  params.push(`id=${encodeURIComponent(recordId)}`);
+  if (recordId) {
+    params.push(`id=${encodeURIComponent(recordId)}`);
+  }
 
   if (page) {
     params.push(`page=${encodeURIComponent(page)}`);
+    return `${base}DataEntry/index.php?${params.join("&")}`;
   }
 
   return `${base}DataEntry/record_home.php?${params.join("&")}`;
