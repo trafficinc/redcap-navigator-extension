@@ -1,38 +1,39 @@
 import { buildRecordUrl } from "./urls.js";
-import { getRecent, saveRecentList } from "./storage.js";
+import { getFormsPages, saveFormsPagesList } from "./storage.js";
 
-export async function saveRecentRecord(state, record) {
-  if (!state.settings.enableRecentTracking) {
-    return;
-  }
-
-  const current = await getRecent();
+export async function saveFormPage(state, formPage) {
+  const current = await getFormsPages();
 
   const deduped = current.filter((item) => {
     return !(
-      String(item.pid) === String(record.pid) &&
-      String(item.recordId) === String(record.recordId) &&
-      String(item.page || "") === String(record.page || "") &&
-      String(item.arm || "") === String(record.arm || "")
+      String(item.pid) === String(formPage.pid) &&
+      String(item.page || "") === String(formPage.page || "") &&
+      String(item.serverUrl || "") === String(formPage.serverUrl || "") &&
+      String(item.serverVersion || "") === String(formPage.serverVersion || "")
     );
   });
 
-  deduped.unshift(record);
+  deduped.unshift(formPage);
 
-  await saveRecentList(deduped.slice(0, 12));
+  await saveFormsPagesList(deduped.slice(0, 20));
 }
 
-export async function renderRecent(container, state) {
+export async function renderFormsPages(container, state) {
   container.innerHTML = "";
 
-  const recent = await getRecent();
+  const formsPages = await getFormsPages();
 
-  for (const item of recent) {
+  if (!formsPages.length) {
+    container.innerHTML = `<li class="empty-state">No forms/pages saved</li>`;
+    return;
+  }
+
+  for (const item of formsPages) {
     const li = document.createElement("li");
 
     const span = document.createElement("span");
-    const friendlyPage = item.projectTitle || item.formLabel || item.page || "";
-    span.textContent = `${item.pid} / ${item.recordId} / ${friendlyPage}`.trim();
+    const label = item.formLabel || item.page || "";
+    span.textContent = `${item.pid} / ${label}`.trim();
 
     const actions = document.createElement("div");
     actions.className = "item-actions favorite-actions";
@@ -50,7 +51,7 @@ export async function renderRecent(container, state) {
       const url = buildRecordUrl(
         server,
         item.pid,
-        item.recordId,
+        item.recordId || "",
         item.page || "",
         item.arm || "",
       );
@@ -81,16 +82,18 @@ export async function renderRecent(container, state) {
     deleteBtn.className = "btn btn-sm favorite-btn favorite-btn-delete";
     deleteBtn.textContent = "Delete";
     deleteBtn.addEventListener("click", async () => {
-      const current = await getRecent();
+      const current = await getFormsPages();
       const filtered = current.filter((entry) => {
         return !(
           String(entry.pid) === String(item.pid) &&
-          String(entry.recordId) === String(item.recordId) &&
-          String(entry.page || "") === String(item.page || "")
+          String(entry.page || "") === String(item.page || "") &&
+          String(entry.serverUrl || "") === String(item.serverUrl || "") &&
+          String(entry.serverVersion || "") === String(item.serverVersion || "")
         );
       });
-      await saveRecentList(filtered);
-      await renderRecent(container, state);
+
+      await saveFormsPagesList(filtered);
+      await renderFormsPages(container, state);
     });
 
     actions.appendChild(openBtn);

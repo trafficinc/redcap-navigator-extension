@@ -13,6 +13,7 @@ import {
 import { detectActiveRedcapContext } from "./context.js";
 import { renderFavorites, addFavoriteFromContext } from "./favorites.js";
 import { renderRecent, saveRecentRecord } from "./recents.js";
+import { renderFormsPages, saveFormPage } from "./forms-pages.js";
 import { runCommand } from "./commands.js";
 import {
   applyDarkMode,
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     formInput: document.getElementById("formName"),
     favoritesList: document.getElementById("favorites"),
     recentList: document.getElementById("recentRecords"),
+    formsPagesList: document.getElementById("savedFormsPages"),
     commandPaletteSection: document.getElementById("commandPaletteSection"),
     toggleCommandPaletteBtn: document.getElementById("toggleCommandPalette"),
     closeCommandPaletteBtn: document.getElementById("closeCommandPalette"),
@@ -39,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     useDetectedContextBtn: document.getElementById("useDetectedContext"),
     addCurrentProjectBtn: document.getElementById("addCurrentProject"),
     addCurrentRecordBtn: document.getElementById("addCurrentRecord"),
+    addCurrentFormPageBtn: document.getElementById("addCurrentFormPage"),
     openRecordBtn: document.getElementById("openRecord"),
     dashboardBtn: document.getElementById("recordDashboard"),
     addFavoriteBtn: document.getElementById("addFavorite"),
@@ -358,6 +361,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await saveRecentRecord(state, {
       pid: state.detectedContext.pid,
       recordId: state.detectedContext.recordId,
+      projectTitle: state.detectedContext.projectLabel || "",
       page: state.detectedContext.page || "",
       arm: state.detectedContext.arm || "",
       formLabel: state.detectedContext.formLabel || "",
@@ -367,6 +371,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await renderRecent(ui.recentList, state);
   }
+
+    async function addCurrentFormPage() {
+      if (!state.detectedContext?.pid || !state.detectedContext?.page) {
+        alert("No REDCap form/page detected on the active tab.");
+        return;
+      }
+
+      syncInputsFromContext(ui, state.detectedContext);
+
+      await saveFormPage(state, {
+        pid: state.detectedContext.pid,
+        recordId: state.detectedContext.recordId || "",
+        page: state.detectedContext.page || "",
+        arm: state.detectedContext.arm || "",
+        formLabel: state.detectedContext.formLabel || "",
+        serverUrl: state.currentServer.url,
+        serverVersion: state.currentServer.version || "",
+      });
+
+      await renderFormsPages(ui.formsPagesList, state);
+    }
 
   ui.serverSelect?.addEventListener("change", async () => {
     const selected = findSelectedServer();
@@ -378,6 +403,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   ui.useDetectedContextBtn?.addEventListener("click", useDetectedContext);
   ui.addCurrentProjectBtn?.addEventListener("click", addCurrentProject);
   ui.addCurrentRecordBtn?.addEventListener("click", addCurrentRecord);
+  ui.addCurrentFormPageBtn?.addEventListener("click", addCurrentFormPage);
   ui.openRecordBtn?.addEventListener("click", openProjectOrRecord);
   ui.dashboardBtn?.addEventListener("click", openDashboard);
   ui.addFavoriteBtn?.addEventListener("click", async () => {
@@ -436,4 +462,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   await detectAndPrefill();
   await renderFavorites(ui.favoritesList, state);
   await renderRecent(ui.recentList, state);
+  await renderFormsPages(ui.formsPagesList, state);
 });

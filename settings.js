@@ -72,6 +72,22 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter((item) => item.pid && item.serverUrl);
   }
 
+  function normalizeFormsPages(list) {
+    if (!Array.isArray(list)) return [];
+
+    return list
+      .map((item) => ({
+        pid: String(item?.pid || "").trim(),
+        recordId: String(item?.recordId || "").trim(),
+        page: String(item?.page || "").trim(),
+        arm: String(item?.arm || "").trim(),
+        formLabel: String(item?.formLabel || "").trim(),
+        serverUrl: String(item?.serverUrl || "").trim(),
+        serverVersion: String(item?.serverVersion || "").trim(),
+      }))
+      .filter((item) => item.pid && item.page && item.serverUrl);
+  }
+
   function normalizeImportedSettings(data) {
     const cleanedServers = Array.isArray(data?.servers)
       ? data.servers.map(normalizeServer).filter((s) => s.url)
@@ -99,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
           : false,
       darkMode: typeof data?.darkMode === "boolean" ? data.darkMode : false,
       favorites: normalizeFavorites(data?.favorites),
+      formsPages: normalizeFormsPages(data?.formsPages),
     };
   }
 
@@ -269,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "favorites",
     ]);
 
-    const localData = await chrome.storage.local.get(["darkMode"]);
+    const localData = await chrome.storage.local.get(["darkMode", "formsPages"]);
 
     const backup = {
       app: "REDCap Navigator",
@@ -300,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : false,
         darkMode: Boolean(localData.darkMode),
         favorites: normalizeFavorites(syncData.favorites),
+        formsPages: normalizeFormsPages(localData.formsPages),
       },
     };
 
@@ -353,6 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     await chrome.storage.local.set({
       darkMode: imported.darkMode,
+      formsPages: imported.formsPages,
     });
 
     await loadSettings();

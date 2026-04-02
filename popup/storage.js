@@ -19,7 +19,8 @@ export async function getSettings() {
   const localData = await chrome.storage.local.get([
     "selectedServerUrl",
     "darkMode",
-    "recent"
+    "recent",
+    "formsPages"
   ]);
 
   const servers = Array.isArray(syncData.servers) && syncData.servers.length
@@ -40,7 +41,8 @@ export async function getSettings() {
     selectedServerUrl: localData.selectedServerUrl || "",
     darkMode: Boolean(localData.darkMode),
     aliases: syncData.aliases || {},
-    recent: Array.isArray(localData.recent) ? localData.recent : []
+    recent: Array.isArray(localData.recent) ? localData.recent : [],
+    formsPages: Array.isArray(localData.formsPages) ? localData.formsPages : []
   };
 }
 
@@ -64,6 +66,15 @@ export async function getRecent() {
 
 export async function saveRecentList(recent) {
   await chrome.storage.local.set({ recent });
+}
+
+export async function getFormsPages() {
+  const data = await chrome.storage.local.get(["formsPages"]);
+  return Array.isArray(data.formsPages) ? data.formsPages : [];
+}
+
+export async function saveFormsPagesList(formsPages) {
+  await chrome.storage.local.set({ formsPages });
 }
 
 export async function setDarkMode(darkMode) {

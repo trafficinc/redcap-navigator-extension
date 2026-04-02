@@ -80,6 +80,7 @@
         <button id="useDetectedContext" class="btn btn-primary btn-sm">Use Current Page</button>
         <button id="addCurrentProject" class="btn btn-sm">+ Add Project</button>
         <button id="addCurrentRecord" class="btn btn-sm">+ Add Record</button>
+        <button id="addCurrentFormPage" class="btn btn-sm">+ Add Instrument</button>
       </div>
     </div>
 
@@ -144,21 +145,31 @@
     <!-- FAVORITES -->
     <div class="section">
       <div class="section-header">
-        <span class="section-title"><span class="dot" style="background:var(--warning)"></span>Favorites</span>
+        <span class="section-title"><span class="dot" style="background:var(--warning)"></span>Projects</span>
         <button id="addFavorite" class="btn btn-ghost btn-sm">+ Add Current</button>
       </div>
       <ul id="favorites" class="item-list">
-        <li class="empty-state">No favorites yet</li>
+        <li class="empty-state">No projects yet</li>
       </ul>
     </div>
 
     <!-- RECENT RECORDS -->
     <div class="section">
       <div class="section-header">
-        <span class="section-title"><span class="dot"></span>Recent Records</span>
+        <span class="section-title"><span class="dot"></span>Records</span>
       </div>
       <ul id="recentRecords" class="item-list">
-        <li class="empty-state">No recent records</li>
+        <li class="empty-state">No saved records</li>
+      </ul>
+    </div>
+
+    <!-- FORMS/PAGES -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title"><span class="dot" style="background:var(--green)"></span>Forms/Instrument</span>
+      </div>
+      <ul id="savedFormsPages" class="item-list">
+        <li class="empty-state">No forms/instruments saved</li>
       </ul>
     </div>
 
